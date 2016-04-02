@@ -30,8 +30,93 @@ Difficulty : Medium
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include<malloc.h>
+int check_arithmetic(int * arr, int len, int *sol, int start_pos)
+{
+	int i;
+	for (i = start_pos; i < len; i++)
+	{
+		if (arr[i + 1] - arr[i] == arr[i + 2] - arr[i + 1])
+		{
+			sol[0] = i;
+			break;
+		}
+	}
+	for (i = i; i < len; i++)
+	{
+		if (arr[i + 1] - arr[i] != arr[i + 2] - arr[i + 1])
+		{
+			sol[1] = i + 1;
+			break;
+		}
+	}
+	if (sol[1] == -1 && sol[0] == -1)
+		return 0;
+	else
+		return 1;
+}
 
+int check_geometric(int * arr, int len, int * sol)
+{
+	int i;
+	for (i = 0; i < len; i++)
+	{
+		float a = (float)arr[i + 1] / arr[i];
+		float b = (float)arr[i + 2] / arr[i + 1];
+		if (a == b)
+		{
+			sol[0] = i;
+			break;
+		}
+	}
+	for (i = i; i < len; i++)
+	{
+		float a = (float)arr[i + 1] / arr[i];
+		float b = (float)arr[i + 2] / arr[i + 1];
+		if (a != b)
+		{
+			sol[1] = i + 1;
+			break;
+		}
+	}
+	if (sol[1] == -1 && sol[0] == -1)
+		return 0;
+	else
+		return 1;
+}
 int * find_sequences(int *arr, int len){
 	//Return final array which has 6indexes [AP1_S,AP1_E,AP2_S,AP2_E,GP1_S,GP2_E]
-	return NULL;
+	int a_sol[2] = { -1 };
+	int g_sol[2] = { -1 };
+	int *final_sol = (int *)malloc(6 * sizeof(int));
+	int x, i;
+	if (arr == NULL)
+	{
+		return NULL;
+	}
+	x = check_arithmetic(arr, len, a_sol, 0);
+	if (x == 1)
+	{
+		for (i = 0; i < 2; i++)
+		{
+			final_sol[i] = a_sol[i];
+		}
+	}
+	x = check_arithmetic(arr, len, a_sol, a_sol[1]);
+	if (x == 1)
+	{
+		for (i = 0; i < 2; i++)
+		{
+			final_sol[i + 2] = a_sol[i];
+		}
+	}
+	x = check_geometric(arr, len, g_sol);
+	if (x == 1)
+	{
+		for (i = 0; i < 2; i++)
+		{
+			final_sol[i + 4] = g_sol[i];
+		}
+	}
+	return final_sol;
 }

@@ -25,14 +25,93 @@ Merged Sorted Circular SLL .
 
 Difficulty : Medium
 */
-#include <stdlib.h>
-#include <stdio.h>
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
 
 struct node{
 	int data;
 	struct node *next;
 };
-int merge_circularlists(struct node **head1, struct node **head2){
+void MoveNode(struct node** dest, struct node** source)
+{
+	struct node* newNode = *source;
+	assert(newNode != NULL);
+	*source = newNode->next;
+	newNode->next = *dest;
+	*dest = newNode;
+}
+
+struct node* SortedMerge(struct node** a, struct node** b)
+{
+	struct node * x = *a;
+	struct node * y = *b;
+	struct node temp;
+
+	struct node* tail = &temp;
+	temp.next = NULL;
+	while (1)
+	{
+		if (x == NULL)
+		{
+
+			tail->next = y;
+			break;
+		}
+		else if (y == NULL)
+		{
+			tail->next = x;
+			break;
+		}
+		if (x->data <= y->data)
+			MoveNode(&(tail->next), &x);
+		else
+			MoveNode(&(tail->next), &y);
+
+		tail = tail->next;
+	}
+	return(temp.next);
+}
+
+
+int tocircular(struct node **p)
+{
+	struct node *rear;
+	int count = 0;
+	rear = *p;
+	while (rear->next != NULL)
+	{
+		count++;
+		rear = rear->next;
+	}
+	rear->next = *p;
+	/*After this the singly linked list is now circular*/
+	return count+1;
+}
+void tosinglyLinkedList(struct node *p)
+{
+	struct node *rear;
+
+	rear = p;
+	while (rear->next != p)
+	{
+		rear = rear->next;
+	}
+	rear->next = NULL;
+}
+int merge_circularlists(struct node **head1, struct node **head2)
+{
+	if (*head1 == NULL && *head2 == NULL)
+		return -1;
+	else if (*head1 == NULL)
+		return -1;
+	else if (*head2 == NULL)
+		return -1;
+	int len = 0;
+	tosinglyLinkedList(*head1);
+	tosinglyLinkedList(*head2);
+	*head1 = SortedMerge(head1, head2);
+	len = tocircular(head1);
+	return len;
 	//Returns Length of merged Sorted circular SLL and also points *head1 to final SLL .
-	return -1;
 }
